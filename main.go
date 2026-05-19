@@ -94,11 +94,6 @@ func main() {
 			Timeout: playwright.Float(0),
 		},
 	)
-
-	// ⛳ FORCE RENDER TRIGGER
-	page.Evaluate(`window.scrollTo(0, document.body.scrollHeight + 100)`)
-	page.WaitForTimeout(3000)
-
 	// WAIT DATA SAFE
 	select {
 	case data := <-dataChannel:
