@@ -89,11 +89,13 @@ func main() {
 
 	// OPEN PAGE
 	_, err = page.Goto(
-		"https://www.tokopedia.com/search?navsource=&ob=5&srp_component_id=04.06.00.00&srp_page_id=&srp_page_title=&st=product&q=handphone",
+		"https://www.tokopedia.com",
 		playwright.PageGotoOptions{
 			Timeout: playwright.Float(0),
 		},
 	)
+	page.Goto("https://www.tokopedia.com/search?ob=5&related=true&srp_component_id=04.06.00.00&st=product&q=handphone")
+
 	// WAIT DATA SAFE
 	select {
 	case data := <-dataChannel:
