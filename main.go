@@ -101,8 +101,42 @@ func main() {
 					}
 
 					if len(products) < 100 {
-						page.Goto("https://www.tokopedia.com/search?ob=5&related=true&srp_component_id=04.06.00.00&st=product&q=handphone")
-						time.Sleep(3000 * time.Millisecond)
+						page.Evaluate(`window.scrollTo(0, document.body.scrollHeight)`)
+
+					} else {
+						// CREATE CSV
+						file, err := os.Create("products.csv")
+						if err != nil {
+							log.Fatal("could not create file:", err)
+						}
+						defer file.Close()
+
+						writer := csv.NewWriter(file)
+						defer writer.Flush()
+						writer.Write([]string{
+							"Product Name",
+							"Description",
+							"Image Link",
+							"Price",
+							"Rating",
+							"Store",
+						})
+
+						// WRITE CSV
+
+						for i := 0; i < len(products) && i < 100; i++ {
+							p := products[i]
+							writer.Write([]string{
+								p.Name,
+								p.Description,
+								p.MediaURL.Image,
+								p.Price.Text,
+								p.Rating,
+								p.Shop.Name,
+							})
+						}
+						fmt.Println("CSV CREATED")
+						fmt.Println("DONE XD")
 					}
 
 				case <-time.After(15 * time.Second):
@@ -120,40 +154,5 @@ func main() {
 		},
 	)
 	page.Goto("https://www.tokopedia.com/search?ob=5&related=true&srp_component_id=04.06.00.00&st=product&q=handphone")
-	time.Sleep(3000 * time.Millisecond)
-	// CREATE CSV
-	file, err := os.Create("products.csv")
-	if err != nil {
-		log.Fatal("could not create file:", err)
-	}
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-	writer.Write([]string{
-		"Product Name",
-		"Description",
-		"Image Link",
-		"Price",
-		"Rating",
-		"Store",
-	})
-
-	// WRITE CSV
-
-	for i := 0; i < len(products) && i < 100; i++ {
-		p := products[i]
-		writer.Write([]string{
-			p.Name,
-			p.Description,
-			p.MediaURL.Image,
-			p.Price.Text,
-			p.Rating,
-			p.Shop.Name,
-		})
-	}
-
-	fmt.Println("CSV CREATED")
-	fmt.Println("DONE XD")
 	fmt.Scanln()
 }
